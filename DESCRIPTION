@@ -1,6 +1,6 @@
 Package: typeChecker
-Title: Static Type Checker
-Version: 0.5.1
+Title: Static Type Checking
+Version: 0.5.2
 Authors@R: 
     person(given = "Chun Fung",
            family = "Kwok",
@@ -20,4 +20,5 @@ Suggests:
 Imports: 
     purrr,
     rlang,
-    types
+    types,
+    magrittr

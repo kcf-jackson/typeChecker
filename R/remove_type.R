@@ -1,4 +1,15 @@
-remove_types_from_file <- function(input, output) {
+#' Remove type annotations from a file
+#'
+#' @param input A character string; the path of the input.
+#' @param output A character string; the path of the output.
+#'
+#' @examples
+#' file <- system.file('example/test_3.R', package = "typeChecker")
+#' invisible(Map(cat, readLines(file), "\n"))
+#' remove_types_from_file(file)
+#'
+#' @export
+remove_types_from_file <- function(input, output = stdout()) {
     src_file <- readLines(input)
 
     src_comment_line_num <- src_file %>%
@@ -16,8 +27,8 @@ remove_types_from_file <- function(input, output) {
         purrr::map(deparse)
 
     # Create a new file with the annotation-free expressions
-    new_exprs %>%
-        purrr::map2(rc_exprs_line_num, function(expr, lnum) {
+    res <- new_exprs %>%
+        purrr::map2(src_exprs_line_num, function(expr, lnum) {
             # Turn a new expression into a block of the same length as the
             # original expression
             res <- rep("", lnum[2])
@@ -29,10 +40,15 @@ remove_types_from_file <- function(input, output) {
             res[lnum[1]:lnum[2]]
         }) %>%
         purrr::reduce2(src_exprs_line_num, function(res, expr, lnum) {
-            # Insert the blocks into the origial file
+            # Insert the blocks into an empty file following the layout in the
+            # original file
             res[lnum[1]:lnum[2]] <- expr
             res
-        }, .init = src_file)
+        }, .init = rep("", length(src_file))) %>%
+        # Insert comments at the exact same position as the original file
+        purrr::map2_chr(trailing_comment(src_file), safe_paste)
+
+    writeLines(res, con = output)
 }
 
 
@@ -41,7 +57,7 @@ has_full_comment <- Vectorize(function(x) {
 })
 
 
-trailing_comment <- function(x) {
+trailing_comment <- Vectorize(function(x) {
     chars <- x
     pos <- 1
     while (nchar(chars) > 0) {
@@ -67,7 +83,7 @@ trailing_comment <- function(x) {
         }
     }
     NULL
-}
+})
 
 safe_paste <- function(x, y) {
     if (is.null(y)) return(x)
@@ -77,9 +93,3 @@ safe_paste <- function(x, y) {
     paddings <- paste(rep(" ", y$start_pos - 1 - nchar(x)), collapse = "")
     paste0(x, paddings, y$text)
 }
-
-
-# library(magrittr)
-# file <- './inst/example/test_3.R'
-# readLines(file) %>% purrr::walk(cat, "\n")
-# remove_types_from_file(file)  %>% purrr::walk(cat, "\n")
