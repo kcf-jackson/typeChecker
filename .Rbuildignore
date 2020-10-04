@@ -1,3 +1,5 @@
 ^typeChecker\.Rproj$
 ^\.Rproj\.user$
 ^LICENSE\.md$
+^readme\.Rmd$
+^readme\.md$

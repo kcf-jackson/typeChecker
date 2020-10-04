@@ -2,3 +2,4 @@
 
 export(eval_type)
 export(type_check)
+export(type_check_active)
