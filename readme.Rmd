@@ -11,8 +11,6 @@ knitr::opts_chunk$set(echo = TRUE)
 
 Implements, as an experiment, a primitive static type checker following the type annotation syntax proposed in [DSC 2017 Syntax Extensions to R](https://www.r-project.org/dsc/2017/slides/syntax-extensions.html#/type-annotations) and the [types](https://github.com/jimhester/types) package.
 
-*This package does not depend on the `types` package, but they are expected to be used together, as `types` is needed to run the annotated code as normal code.*
-
 
 ## Installation and Usage
 
