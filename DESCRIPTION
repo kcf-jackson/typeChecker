@@ -21,4 +21,6 @@ Imports:
     purrr,
     rlang,
     types,
-    magrittr
+    magrittr,
+    xmlparsedata,
+    xml2
