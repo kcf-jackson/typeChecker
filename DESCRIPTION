@@ -1,6 +1,6 @@
 Package: typeChecker
 Title: Static Type Checking
-Version: 0.5.2
+Version: 0.5.3
 Authors@R: 
     person(given = "Chun Fung",
            family = "Kwok",
@@ -21,6 +21,4 @@ Imports:
     purrr,
     rlang,
     types,
-    magrittr,
-    xmlparsedata,
-    xml2
+    magrittr
