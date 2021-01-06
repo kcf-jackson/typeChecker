@@ -96,9 +96,10 @@ eval_fun_def_type <- function(expr, envir) {
 eval_fun_call_type <- function(expr, envir) {
     fun_name <- deparse1(expr[[1]])
     fun <- envir[[fun_name]]
+    # Type check the arguments
+    input_type <- purrr::map(expr[-1], ~eval_type(.x, envir = envir)$value)
     # The type signature of a function is declared
     if (!is.null(fun)) {
-        input_type <- purrr::map(expr[-1], ~eval_type(.x, envir = envir)$value)
         return(store(fun(input_type), envir))
     }
     # The type signature of a function is not declared
