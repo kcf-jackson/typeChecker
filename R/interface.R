@@ -23,7 +23,11 @@ interpreter <- function() {
 #'
 #' @export
 type_check <- function(path) {
-    es <- parse(path, keep.source = TRUE)
+    if (grepl("\n", path)) {
+        es <- parse(text = path, keep.source = TRUE)
+    } else {
+        es <- parse(path, keep.source = TRUE)
+    }
     aes <- annotate_expr(es)
 
     safe_eval_type <- purrr::safely(eval_type)
@@ -33,7 +37,7 @@ type_check <- function(path) {
         res <- safe_eval_type(expr, envir)
         if (!is.null(res$error)) {
             cat("In the expression:\n")
-            cat(attr(expr, 'text'), "\n")
+            cat(attr(expr, 'text'), "\n", sep = "")
             cat("The following type error is found:\n")
             cat(res$error$message)
             errors <- c(errors, list(list(
