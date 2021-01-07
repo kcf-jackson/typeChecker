@@ -36,19 +36,17 @@ type_check <- function(path) {
     for (expr in aes) {
         res <- safe_eval_type(expr, envir)
         if (!is.null(res$error)) {
-            cat("In the expression:\n")
-            cat(attr(expr, 'text'), "\n", sep = "")
-            cat("The following type error is found:\n")
             cat(res$error$message)
+            info <- parse_error(res$error$message)
             errors <- c(errors, list(list(
                 filename = basename(path),
                 pathname = path,
-                line_number = attr(expr, 'line1'),
-                column_number = attr(expr, 'col1'),
+                line_number = info$range$line1,
+                column_number = info$range$col1,
                 type = "type",
-                message = res$error$message,
-                line = attr(expr, 'text'),
-                ranges = c(attr(expr, 'line2'), attr(expr, 'col2')),
+                message = info$error_msg,
+                line = info$expr,
+                ranges = c(info$range$line2, info$range$col2),
                 linter = "typeChecker"
             )))
             return(invisible(errors))

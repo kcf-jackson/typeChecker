@@ -83,10 +83,13 @@ eval_fun_def_type <- function(expr, envir) {
     pairlist_args <- expr[[2]]
     pairlist_type <- purrr::map(expr[[2]], ~eval_type(.x, envir = envir)$value)
     fun_body <- expr[[3]]
-    # f :: [type] -> type
-    f <- function(input_type) {
+    # f :: [type, expr] -> type
+    # Note 2: the function is extended by an argument 'input_expr' to pinpoint
+    # the expression when the type-check fails.
+    f <- function(input_type, input_expr) {
         input_type <- add_full_names(input_type, names(pairlist_type))
-        restricted_input <- purrr::map2(input_type, pairlist_type, merge_type)
+        restricted_input <- purrr::map2(input_type, pairlist_type, merge_type,
+                                        info = list(expr = input_expr))
         eval_type(fun_body, append(envir, restricted_input))$value
     }
     return(store(f, envir))
@@ -100,7 +103,7 @@ eval_fun_call_type <- function(expr, envir) {
     input_type <- purrr::map(expr[-1], ~eval_type(.x, envir = envir)$value)
     # The type signature of a function is declared
     if (!is.null(fun)) {
-        return(store(fun(input_type), envir))
+        return(store(fun(input_type, expr), envir))  # See Note 2
     }
     # The type signature of a function is not declared
     return(store("ANY", envir))

@@ -6,5 +6,5 @@
 #' are optional and can be added incrementally to the code base.
 #'
 #' @importFrom magrittr %>%
-#' @importFrom utils getParseData
+#' @importFrom utils getParseData tail
 "_PACKAGE"
