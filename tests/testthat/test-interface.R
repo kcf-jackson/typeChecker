@@ -4,12 +4,12 @@ test_that("Test interface", {
     output <- input_file %>%
         type_check() %>%
         capture.output() %>%
-        paste0(collapse = "\n")
+        paste0(collapse = "\n") %>%
+        strip_style()
 
-    expected <- "In the expression:
-add('a', 3)
-The following type error is found:
-Type mismatch. Inferred: character; Annotated: numeric"
+    expected <- "Type mismatch error at 6:1-6:11
+In the expression: add('a', 3)
+Expected: numeric; Actual: character."
 
     testthat::expect_equal(output, expected)
 })
