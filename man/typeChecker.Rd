@@ -12,4 +12,9 @@ are optional and can be added incrementally to the code base.
 \author{
 \strong{Maintainer}: Chun Fung Kwok \email{kcf.jackson@gmail.com} (\href{https://orcid.org/0000-0002-0716-3879}{ORCID})
 
+Other contributors:
+\itemize{
+  \item Andrew Craig [contributor]
+}
+
 }
