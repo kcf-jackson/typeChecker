@@ -46,7 +46,7 @@ type_check <- function(path) {
                 type = "type",
                 message = info$error_msg,
                 line = info$expr,
-                ranges = c(info$range$line2, info$range$col2),
+                ranges = list(c(info$range$col1, info$range$col2)),
                 linter = "typeChecker"
             )))
             return(invisible(errors))
