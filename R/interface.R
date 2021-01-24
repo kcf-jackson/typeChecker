@@ -49,13 +49,16 @@ type_check <- function(path) {
                 ranges = list(c(info$range$col1, info$range$col2)),
                 linter = "typeChecker"
             )))
-            return(invisible(errors))
         } else {
             envir <- res$result$envir
         }
     }
-    cat("The file is type-checked.")
-    return(invisible(NULL))
+    if (length(errors) > 0) {
+        return(invisible(errors))
+    } else {
+        cat("The file is type-checked.")
+        return(invisible(NULL))
+    }
 }
 
 push <- function(xs, el) {
