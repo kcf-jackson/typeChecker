@@ -63,15 +63,15 @@ in which the error is found.
 
 ### Notes
 
-  - Type-checking in the contexts of dynamic types and static types are
+-   Type-checking in the contexts of dynamic types and static types are
     different.
-  - When there is no annotation, there cannot be any contradiction.
-  - An annotation is a tag, and it can be named arbitrarily.
-  - Constants are assigned their natural types, e.g. numeric for `10`,
+-   When there is no annotation, there cannot be any contradiction.
+-   An annotation is a tag, and it can be named arbitrarily.
+-   Constants are assigned their natural types, e.g. numeric for `10`,
     character for `'a'`, and logical for `TRUE`.
-  - All other (un-annotated) variables are assumed the ANY type, which
+-   All other (un-annotated) variables are assumed the ANY type, which
     is compatible with any type.
-  - Currently, the package does not support function type. In a
+-   Currently, the package does not support function type. In a
     static-type language, the type signature of a function can be
     identified by the types of the input and the output. In our case,
     the function is assigned the function type as the input and output
@@ -79,9 +79,11 @@ in which the error is found.
     defined but not used anywhere will not cause an error even when some
     expressions in the function body do not type-check.
 
-## Integration with Visual Studio Code
+## Integration with editors
 
-The integration with Visual Studio Code is kindly provided by
+### Visual Studio Code (VS Code)
+
+The integration with VS Code is kindly provided by
 [@andycraig](https://github.com/andycraig). The feature supports exact
 tracking of the line and column numbers at which the type error occurs.
 Here is a screenshot:
@@ -94,4 +96,4 @@ in VS Code and the R package `languageserver` as follows:
 
     remotes::install_github("andycraig/languageserver@types")
 
-The type-checking will trigger automatically when an R file is saved.
+The type-checking will then trigger automatically on R files.

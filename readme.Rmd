@@ -74,9 +74,11 @@ The package type-checks R files by looking for contradiction between the annotat
 - Currently, the package does not support function type. In a static-type language, the type signature of a function can be identified by the types of the input and the output. In our case, the function is assigned the function type as the input and output types can vary. The important consequence is that a function that is defined but not used anywhere will not cause an error even when some expressions in the function body do not type-check. 
 
 
-## Integration with Visual Studio Code
+## Integration with editors
 
-The integration with Visual Studio Code is kindly provided by [\@andycraig](https://github.com/andycraig). The feature supports exact tracking of the line and column numbers at which the type error occurs. Here is a screenshot:
+### Visual Studio Code (VS Code)
+
+The integration with VS Code is kindly provided by [\@andycraig](https://github.com/andycraig). The feature supports exact tracking of the line and column numbers at which the type error occurs. Here is a screenshot:
 
 ![](man/figures/vscode_demo.png)
 
@@ -86,4 +88,4 @@ To enable this feature, install the [R LSP Client extension](https://marketplace
 remotes::install_github("andycraig/languageserver@types")
 ```
 
-The type-checking will trigger automatically when an R file is saved.
+The type-checking will then trigger automatically on R files.
