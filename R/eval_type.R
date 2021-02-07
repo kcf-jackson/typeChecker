@@ -87,12 +87,21 @@ eval_fun_def_type <- function(expr, envir) {
     # Note 2: the function is extended by an argument 'input_expr' to pinpoint
     # the expression when the type-check fails.
     f <- function(input_type, input_expr) {
+        check_matching_numbers_of_arguments(
+            input_type, pairlist_type,
+            info = list(expr = input_expr)
+        )
         input_type <- add_full_names(input_type, names(pairlist_type))
         restricted_input <- purrr::map2(input_type, pairlist_type, merge_type,
                                         info = list(expr = input_expr))
         eval_type(fun_body, append(envir, restricted_input))$value
     }
     return(store(f, envir))
+}
+
+# Number of arguments without default values
+num_free_args <- function(pairlist_args) {
+    # TODO
 }
 
 
@@ -118,4 +127,22 @@ add_full_names <- function(args, args_names) {
         names(args)[nargs == ""] <- setdiff(args_names, nargs)
         return(args)
     }
+}
+
+check_matching_numbers_of_arguments <- function(input_type, pairlist_type, info) {
+    if (length(input_type) != length(pairlist_type)) {
+        error_message <- c(
+            sprintf("Mismatch of numbers of arguments at %d:%d-%d:%d",
+               attr(info$expr, "line1"), attr(info$expr, "col1"),
+               attr(info$expr, "line2"), attr(info$expr, "col2")),
+            sprintf("In the expression: %s", attr(info$expr, "text")),
+            sprintf("Expected: at least %s; Actual: %s.",
+               length(pairlist_type),
+               length(input_type))
+        ) %>%
+            paste(collapse = "\n") %>%
+            cyan()
+        stop(error_message)
+    }
+    TRUE
 }
