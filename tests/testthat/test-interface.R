@@ -9,7 +9,7 @@ test_that("Test interface", {
 
 test_that("Test features", {
     input_file <- system.file("example/typeChecker_test.R", package = "typeChecker")
-    output <- suppressMessages(type_check(input_file))
+    output <- type_check(input_file)
 
     # Example 1
     expect_equal(output[[1]]$line_number, 5)
