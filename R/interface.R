@@ -36,7 +36,7 @@ type_check <- function(path) {
     for (expr in aes) {
         res <- safe_eval_type(expr, envir)
         if (!is.null(res$error)) {
-            cat(res$error$message, "\n", sep = "")
+            message(res$error$message, "\n", sep = "")
             info <- parse_error(res$error$message)
             errors <- c(errors, list(list(
                 filename = basename(path),
@@ -56,7 +56,7 @@ type_check <- function(path) {
     if (length(errors) > 0) {
         return(invisible(errors))
     } else {
-        cat("The file is type-checked.")
+        message("The file is type-checked.")
         return(invisible(NULL))
     }
 }
