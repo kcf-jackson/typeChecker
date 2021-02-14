@@ -2,8 +2,8 @@
 f0 <- function(x = ? character) {
     x
 }
-f0(123)
-f0("abc")
+f0(123)      # fail
+f0("abc")    # pass
 
 
 # 2. Check nested function
@@ -13,8 +13,8 @@ nested_f0 <- function(x) {
     }
     f0(x)
 }
-nested_f0(123)
-nested_f0("abc")
+nested_f0(123)     # pass
+nested_f0("abc")   # fail
 
 
 # 3. Check call within call
@@ -68,3 +68,54 @@ f5 <- function(x = ? numeric, y = ? character) {
      paste(as.character(x), y)
 }
 f5("Hi")
+
+
+f5b <- function(x = ? numeric, y = 10 ? numeric) {
+    paste(as.character(x), y)
+}
+f5b(10)        # pass
+f5b(1, 2)      # pass
+f5b("Hi")      # fail
+f5b(10, "Hi")  # fail
+
+
+# 9. Check function that returns function
+f6 <- function(y) {
+    function(x = ? character) {
+        x
+    }
+}
+f6()             # fail
+f6(NULL)         # pass
+f6(NULL)(123)    # anonymous does not trigger check
+
+ff6 <- f6(NULL)
+ff6(123)         # fail
+ff6("abc")       # pass
+
+
+# 10. Check lexical scope
+myPaste <- function(x = ? character, y = ? character) {
+    paste(x, y)
+}
+
+
+f7 <- function(y = "abc") {
+    y <- 100
+    function(x) {
+        myPaste(x, y)
+    }
+}
+ff7 <- f7()
+ff7("x")         # fail
+
+
+f7b <- function(y = "abc") {
+    function(x) {
+        y <- 100
+        myPaste(x, y)
+    }
+}
+
+ff7 <- f7b()
+ff7("x")         # fail

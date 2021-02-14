@@ -37,4 +37,14 @@ test_that("Test features", {
 
     # Example 8
     expect_equal(output[[11]]$line_number, 70)
+    expect_equal(output[[12]]$line_number, 78)
+    expect_equal(output[[13]]$line_number, 79)
+
+    # Example 9
+    expect_equal(output[[14]]$line_number, 88)
+    expect_equal(output[[15]]$line_number, 93)
+
+    # Example 10
+    expect_equal(output[[16]]$line_number, 106)
+    expect_equal(output[[17]]$line_number, 116)
 })
