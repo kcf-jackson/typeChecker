@@ -22,52 +22,52 @@ f1 <- function() {
     x <- 123
     f0(x)
 }
-f1()
+f1()    # fail
 
 
 # 4. Annotate type of existing functions
 print <- function(x = ? character) {
     print(x)
 }
-print(123)
-print("abc")
+print(123)    # fail
+print("abc")  # pass
 
 
 # 5. Check multiple arguments
 f2 <- function(x = ? character, y = ? character) {
     paste(x, y)
 }
-f2(1, 2)
-f2("a", "b")
-f2("a", 2)
-f2(1, "b")
+f2(1, 2)       # fail
+f2("a", "b")   # pass
+f2("a", 2)     # fail
+f2(1, "b")     # fail
 
 
 # 6. Check function overwrite
 f2 <- function(z = ? numeric) {
     z
 }
-f2(123)
-f2("abc")
+f2(123)    # pass
+f2("abc")  # fail
 
 
 # 7. Check empty arguments
 f3 <- function() {
     print("hi")
 }
-f3(123)
+f3(123)  # fail
 
 f4 <- function(x = ? character) {
     x
 }
-f4()
+f4()  # fail
 
 
 # 8. Check calling with wrong number of arguments
 f5 <- function(x = ? numeric, y = ? character) {
      paste(as.character(x), y)
 }
-f5("Hi")
+f5("Hi")  # fail
 
 
 f5b <- function(x = ? numeric, y = 10 ? numeric) {
@@ -87,7 +87,7 @@ f6 <- function(y) {
 }
 f6()             # fail
 f6(NULL)         # pass
-f6(NULL)(123)    # anonymous does not trigger check
+f6(NULL)(123)    # anonymous function does not trigger check
 
 ff6 <- f6(NULL)
 ff6(123)         # fail
@@ -106,7 +106,7 @@ f7 <- function(y = "abc") {
         myPaste(x, y)
     }
 }
-ff7 <- f7()
+ff7 <- f7()      # pass
 ff7("x")         # fail
 
 
@@ -117,5 +117,5 @@ f7b <- function(y = "abc") {
     }
 }
 
-ff7 <- f7b()
+ff7 <- f7b()     # pass
 ff7("x")         # fail
