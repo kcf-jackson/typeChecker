@@ -22,8 +22,8 @@ intersect_type <- function(x, y) {
     intersect(x, y)
 }
 
-merge_type <- function(x, y) {
-    if (!match_type(x, y)) stop(error_msg(x, y))
+merge_type <- function(x, y, ...) {
+    if (!match_type(x, y)) stop(error_msg(x, y, ...))
     return(intersect_type(x, y))
 }
 

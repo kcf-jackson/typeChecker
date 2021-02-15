@@ -81,25 +81,34 @@ eval_closure_type <- function(expr, envir) {
 # the input-output declaration, as we are in the context of dynamic typing.
 eval_fun_def_type <- function(expr, envir) {
     pairlist_args <- expr[[2]]
-    pairlist_type <- purrr::map(expr[[2]], ~eval_type(.x, envir = envir)$value)
+    pairlist_type <- purrr::map(expr[[2]], ~eval_type(.x, envir = envir)$value)  # assume default value implies type constraints
     fun_body <- expr[[3]]
-    # f :: [type] -> type
-    f <- function(input_type) {
+    # f :: [type, expr] -> type
+    # Note 2: the function is extended by an argument 'input_expr' to pinpoint
+    # the expression when the type-check fails.
+    f <- function(input_type, input_expr) {
+        check_matching_numbers_of_arguments(
+            input_type, pairlist_args,
+            info = list(expr = input_expr)
+        )
         input_type <- add_full_names(input_type, names(pairlist_type))
-        restricted_input <- purrr::map2(input_type, pairlist_type, merge_type)
+        restricted_input <- purrr::map2(
+            input_type, pairlist_type, merge_type,
+            info = list(expr = input_expr)
+        )
         eval_type(fun_body, append(envir, restricted_input))$value
     }
     return(store(f, envir))
 }
 
-
 eval_fun_call_type <- function(expr, envir) {
     fun_name <- deparse1(expr[[1]])
     fun <- envir[[fun_name]]
+    # Type check the arguments
+    input_type <- purrr::map(expr[-1], ~eval_type(.x, envir = envir)$value)
     # The type signature of a function is declared
     if (!is.null(fun)) {
-        input_type <- purrr::map(expr[-1], ~eval_type(.x, envir = envir)$value)
-        return(store(fun(input_type), envir))
+        return(store(fun(input_type, expr), envir))  # See Note 2
     }
     # The type signature of a function is not declared
     return(store("ANY", envir))
@@ -108,10 +117,56 @@ eval_fun_call_type <- function(expr, envir) {
 add_full_names <- function(args, args_names) {
     nargs <- names(args)
     if (is.null(nargs)) {
-        names(args) <- args_names
+        replace_seq <- seq_along(args)
+        names(args) <- args_names[replace_seq]
         return(args)
     } else {
-        names(args)[nargs == ""] <- setdiff(args_names, nargs)
+        replace_seq <- seq_along(names(args)[nargs == ""])
+        names(args)[nargs == ""] <- setdiff(args_names, nargs)[replace_seq]
         return(args)
     }
+}
+
+check_matching_numbers_of_arguments <- function(input_type, pairlist_args, info) {
+    min_length <- num_free_args(pairlist_args)
+    max_length <- length(pairlist_args)
+    input_length <- length(input_type)
+
+    too_few <- input_length < min_length
+    too_many <- input_length > max_length
+    if (!too_few && !too_many) return(TRUE)
+
+    # Provide more information when mismatch occurs
+    detail <- ifelse(
+        too_few,
+        sprintf("Expected: at least %s; Actual: %s.", min_length, input_length),
+        sprintf("Expected: at most %s; Actual: %s.", max_length, input_length)
+    )
+
+    error_message <- c(
+        sprintf("Mismatch of numbers of arguments at %d:%d-%d:%d",
+           attr(info$expr, "line1"), attr(info$expr, "col1"),
+           attr(info$expr, "line2"), attr(info$expr, "col2")),
+        sprintf("In the expression: %s", attr(info$expr, "text")),
+        detail
+    ) %>%
+        paste(collapse = "\n") %>%
+        cyan()
+    stop(error_message)
+}
+
+# Number of arguments without default values
+num_free_args <- function(pairlist_args) {
+    has_default_value <- function(arg) {
+        # case with type annotation
+        if (rlang::is_call(arg, "?")) {
+            return(length(arg) >= 3)
+        }
+        # regular case
+        deparse1(arg) != ""
+    }
+
+    pairlist_args %>%
+        purrr::map_lgl(~!has_default_value(.x)) %>%
+        sum()
 }

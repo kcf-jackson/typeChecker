@@ -1,5 +1,15 @@
 test_that("Removing type annotation", {
+    input_file <- system.file("example/test_1.R", package = "typeChecker")
+    ref_file <- system.file("example/plain_1.R", package = "typeChecker")
 
+    output <- input_file %>%
+        remove_types_from_file() %>%
+        capture.output()
+
+    expected <- ref_file %>%
+        readLines()
+
+    testthat::expect_identical(output, expected)
 })
 
 test_that("Handling trailing comments", {

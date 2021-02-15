@@ -16,7 +16,7 @@ remove_types_from_file <- function(input, output = stdout()) {
         has_full_comment() %>%
         which()
 
-    src_exprs_line_num <- parse(input) %>%
+    src_exprs_line_num <- parse(input, keep.source = TRUE) %>%
         attr("srcref") %>%
         purrr::map(~.x[c(1, 3)]) # first line and last line, see ?srcfile
 

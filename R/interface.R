@@ -23,23 +23,42 @@ interpreter <- function() {
 #'
 #' @export
 type_check <- function(path) {
-    es <- rlang::parse_exprs(file(path))
-    envir <- list()
+    if (grepl("\n", path)) {
+        es <- parse(text = path, keep.source = TRUE)
+    } else {
+        es <- parse(path, keep.source = TRUE)
+    }
+    aes <- annotate_expr(es)
+
     safe_eval_type <- purrr::safely(eval_type)
-    for (expr in es) {
+    envir <- list()
+    errors <- list()
+    for (expr in aes) {
         res <- safe_eval_type(expr, envir)
         if (!is.null(res$error)) {
-            cat("In the expression:\n")
-            print(expr)
-            cat("The following type error is found:\n")
-            cat(res$error$message)
-            return(invisible(NULL))
+            message(res$error$message, "\n", sep = "")
+            info <- parse_error(res$error$message)
+            errors <- c(errors, list(list(
+                filename = basename(path),
+                pathname = path,
+                line_number = info$range$line1,
+                column_number = info$range$col1,
+                type = "type",
+                message = info$error_msg,
+                line = info$expr,
+                ranges = list(c(info$range$col1, info$range$col2)),
+                linter = "typeChecker"
+            )))
         } else {
             envir <- res$result$envir
         }
     }
-    cat("The file is type-checked.")
-    invisible(NULL)
+    if (length(errors) > 0) {
+        return(invisible(errors))
+    } else {
+        message("The file is type-checked.")
+        return(invisible(NULL))
+    }
 }
 
 push <- function(xs, el) {
